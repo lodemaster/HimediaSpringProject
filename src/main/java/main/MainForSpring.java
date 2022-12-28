@@ -8,6 +8,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import config.AppCtx;
 import spring.ChangePasswordService;
 import spring.DuplicateMemberException;
+import spring.MemberListPrinter;
 import spring.MemberNotFoundException;
 import spring.MemberRegisterService;
 import spring.RegisterRequest;
@@ -39,12 +40,18 @@ public class MainForSpring {
 				processChangeCommand(command.split(" "));
 				continue;
 			}
+			else if (command.startsWith("list")) {
+				processListCommand();
+				continue;
+			}
 			printHelp();
 		}
 	}
 	
-	// Assembler 객체를 생성하면 필요한 모든 객체가 생성되고 설정됨
-	// private static Assembler assembler = new Assembler();
+	private static void processListCommand() {
+		MemberListPrinter listPrinter = ctx.getBean("listPrinter", MemberListPrinter.class);
+		listPrinter.printAll();
+	}
 
 	// 입력받은 회원정보를 등록하는 메서드
 	private static void processNewCommand(String[] args) {
@@ -54,9 +61,8 @@ public class MainForSpring {
 			return;
 		}
 		
-		
+		// Assembler 클래스에 정의된 getter 메서드를 이용해서 사용할 객체를 구함
 		// MemberRegisterService regSvc = assembler.getMemberRegisterService();
-		// getBean() 메서드를 이용해서 사용할 객체를 구함
 		MemberRegisterService regSvc = ctx.getBean("memberRegSvc", MemberRegisterService.class);
 		RegisterRequest req = new RegisterRequest();
 		req.setEmail(args[1]);
@@ -86,8 +92,8 @@ public class MainForSpring {
 			return;
 		}
 		
+		// Assembler 클래스에 정의된 getter 메서드를 이용해서 사용할 객체를 구함
 		// ChangePasswordService changePwdSvc = assembler.getChangePasswordService();
-		// getBean() 메서드를 이용해서 사용할 객체를 구함
 		ChangePasswordService changePwdSvc = ctx.getBean("changePwdSvc", ChangePasswordService.class);
 		try {		
 			changePwdSvc.changePassword(args[1], args[2], args[3]);
